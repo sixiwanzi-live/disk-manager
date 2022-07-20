@@ -1,0 +1,19 @@
+{
+  "name": "disk-manager",
+  "version": "1.0.0",
+  "description": "视频存储管理",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sixiwanzi-live/disk-manager.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sixiwanzi-live/disk-manager/issues"
+  },
+  "homepage": "https://github.com/sixiwanzi-live/disk-manager#readme"
+}
