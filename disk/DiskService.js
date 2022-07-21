@@ -34,7 +34,6 @@ export default class DiskService {
         if (!bv || bv.length !== 12) {
             throw error.disk.BvIllegal;
         }
-        
         await this.__download(bv);
         await this.__adjust(bv);
         return {};
