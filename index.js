@@ -1,15 +1,33 @@
-import {opendir, stat} from 'fs/promises';
+import Koa from 'koa';
+import Router from '@koa/router';
+import cors from '@koa/cors';
+import koaBody from 'koa-body';
 import config from './config.js';
+import DiskService from './disk/DiskService.js';
 
 (async () => {
-    let totalSize = 0;
-    const dir = await opendir(config.disk.path);
-    for await (const dirent of dir) {
-        if (dirent.isFile()) {
-            const filepath = `${config.disk.path}/${dirent.name}`;
-            const info = await stat(filepath);
-            totalSize += info.size;
-        }
-    }
-    console.log(totalSize);
+    const app = new Koa({ proxy: true });
+    const router = new Router();
+
+    app.context.diskService = new DiskService();
+    await app.context.diskService.init();
+
+    /**
+     * disk
+     */
+    router.post('/disks', async ctx => {
+        ctx.body = await ctx.diskService.save(ctx);
+    });
+    router.get('/disks/:bv', async ctx => {
+        ctx.body = await ctx.diskService.visit(ctx);
+    });
+
+    app.use(koaBody({ 
+        jsonLimit: config.web.bodyLimit
+    }));
+    
+    app.use(cors());
+    app.use(router.routes());
+
+    app.listen(config.web.port);
 })();

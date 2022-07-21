@@ -16,5 +16,13 @@
   "bugs": {
     "url": "https://github.com/sixiwanzi-live/disk-manager/issues"
   },
-  "homepage": "https://github.com/sixiwanzi-live/disk-manager#readme"
+  "homepage": "https://github.com/sixiwanzi-live/disk-manager#readme",
+  "dependencies": {
+    "@koa/cors": "^3.3.0",
+    "@koa/router": "^10.1.1",
+    "axios": "^0.27.2",
+    "koa": "^2.13.4",
+    "koa-body": "^5.0.0",
+    "moment": "^2.29.3"
+  }
 }
