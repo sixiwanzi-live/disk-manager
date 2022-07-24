@@ -24,7 +24,7 @@ import SegmentService from './segment/SegmentService.js';
     /**
      * segment
      */
-    router.post('/segments', async ctx => {
+    router.get('/segments', async ctx => {
         ctx.body = await ctx.segmentService.make(ctx);
     });
 

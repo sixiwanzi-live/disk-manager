@@ -9,21 +9,23 @@ import PushApi from '../api/PushApi.js';
 export default class SegmentService {
 
     make = async (ctx) => {
-        const entity = ctx.request.body;
+        const bv        = ctx.request.query.bv;
+        const startTime = ctx.request.query.startTime;
+        const endTime   = ctx.request.query.endTime;
         // 检查bv是否合法
-        if (!entity.bv || entity.bv.length !== 12) {
+        if (!bv || bv.length !== 12) {
             throw error.disk.BvIllegal;
         }
-        if (entity.endTime - entity.startTime > config.segment.maxInterval * 60 * 1000) {
+        if (endTime - startTime > config.segment.maxInterval * 60 * 1000) {
             throw error.segment.IntervalTooLong;
         }
-        const resource = `${config.disk.path}/video/${entity.bv}.mp4`;
+        const resource = `${config.disk.path}/video/${bv}.mp4`;
         // 检查素材视频是否存在， 若不存在则下载该视频
         try {
             await stat(resource);
         } catch (ex) {
-            console.log(`素材视频${entity.bv}未找到，即将下载该视频`);
-            ctx.diskService.save(entity);
+            console.log(`素材视频${bv}未找到，即将下载该视频`);
+            // ctx.diskService.save(bv);
         }
 
         try {
@@ -36,12 +38,12 @@ export default class SegmentService {
             throw error.segment.ResourceNotFound;
         }
 
-        const filename = `${entity.bv}-${toTime(entity.startTime).replaceAll(':', '-')}--${toTime(entity.endTime).replaceAll(':', '-')}.mp4`;
+        const filename = `${bv}-${toTime(startTime).replaceAll(':', '-')}--${toTime(endTime).replaceAll(':', '-')}.mp4`;
         const output = `${config.disk.path}/segment/${filename}`;
         try {
             await stat(output); // 检查output是否存在，避免重复生成
         } catch (ex) {
-            const cmd = `ffmpeg -i "${resource}" -r 30 -b:v ${config.segment.rate}K -ss ${toTime(entity.startTime)} -to ${toTime(entity.endTime)} "${output}"`;
+            const cmd = `ffmpeg -i "${resource}" -r 30 -b:v ${config.segment.rate}K -ss ${toTime(startTime)} -to ${toTime(endTime)} "${output}"`;
             console.log(cmd);
             try {
                 await new Promise((res, rej) => {
