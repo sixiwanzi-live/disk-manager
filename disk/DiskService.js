@@ -30,7 +30,7 @@ export default class DiskService {
             await stat(filepath);
         } catch (ex) {
             // 下载视频
-            const cmd = `BBDown ${bv} -tv -F ${filepath}`;
+            const cmd = `BBDown ${bv} -tv --skip-subtitle --skip-cover -F ${filepath}`;
             console.log(cmd);
             try {
                 // await new Promise((res, rej) => {
