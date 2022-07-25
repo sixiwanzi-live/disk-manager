@@ -54,7 +54,7 @@ export default class SegmentService {
                     });
                     p.on('exit', (code) => {
                         console.log(`切片程序退出:${filename}, code:${code}`);
-                        setTimeout(res, 3000);
+                        setTimeout(() => res(), 3000);
                     });
                     p.on('error', (error) => {
                         console.log(error);
