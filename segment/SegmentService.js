@@ -55,21 +55,29 @@ export default class SegmentService {
                     
                 // })
                 await new Promise((res, rej) => {
-                    exec.exec(cmd, (error, stdout, stderr) => {
-                        if (error) {
-                            console.log(error);
-                            rej(error);
-                        } else {
-                            // console.log(stderr);
-                            stdout.on('data', (data) => {
-                                console.log(data);
-                            });
-                            stdout.on('close', (code) => {
-                                console.log(`切片处理结束:${filename}, code:${code}`);
-                                res();
-                            });
-                        }                
+                    let p = exec.exec(cmd);
+                    p.on('data', (data) => {
+                        console.log(data);
                     });
+                    p.on('close', (code) => {
+                        console.log(`切片处理结束:${filename}, code:${code}`);
+                        res();
+                    });
+                    // exec.exec(cmd, (error, stdout, stderr) => {
+                    //     if (error) {
+                    //         console.log(error);
+                    //         rej(error);
+                    //     } else {
+                    //         // console.log(stderr);
+                    //         stdout.on('data', (data) => {
+                    //             console.log(data);
+                    //         });
+                    //         stdout.on('close', (code) => {
+                    //             console.log(`切片处理结束:${filename}, code:${code}`);
+                    //             res();
+                    //         });
+                    //     }                
+                    // });
                 });
             } catch (ex) {
                 console.log(ex);
