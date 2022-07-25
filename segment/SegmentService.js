@@ -47,41 +47,19 @@ export default class SegmentService {
             const cmd = `ffmpeg -i "${resource}" -r 30 -b:v ${config.segment.rate}K -ss ${toTime(startTime)} -to ${toTime(endTime)} "${output}"`;
             console.log(cmd);
             try {
-                // const { stdout, stderr } = await promisify(exec.exec)(cmd);
-                // stdout.on('data', (data) => {
-                //     console.log(data);
-                // })
-                // stdout.on('close', (code) => {
-                    
-                // })
                 await new Promise((res, rej) => {
                     let p = exec.exec(cmd);
                     p.on('data', (data) => {
                         console.log(data);
                     });
-                    p.on('close', (code) => {
-                        console.log(`切片处理结束:${filename}, code:${code}`);
-                        
-                    });
                     p.on('exit', (code) => {
                         console.log(`切片程序退出:${filename}, code:${code}`);
-                        res();
+                        setTimeout(res, 3000);
                     });
-                    // exec.exec(cmd, (error, stdout, stderr) => {
-                    //     if (error) {
-                    //         console.log(error);
-                    //         rej(error);
-                    //     } else {
-                    //         // console.log(stderr);
-                    //         stdout.on('data', (data) => {
-                    //             console.log(data);
-                    //         });
-                    //         stdout.on('close', (code) => {
-                    //             console.log(`切片处理结束:${filename}, code:${code}`);
-                    //             res();
-                    //         });
-                    //     }                
-                    // });
+                    p.on('error', (error) => {
+                        console.log(error);
+                        rej(error);
+                    });
                 });
             } catch (ex) {
                 console.log(ex);
