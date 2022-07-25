@@ -33,17 +33,6 @@ export default class DiskService {
             const cmd = `BBDown ${bv} -tv --skip-subtitle --skip-cover -F ${filepath}`;
             console.log(cmd);
             try {
-                // await new Promise((res, rej) => {
-                //     exec.exec(cmd, (error, stdout, stderr) => {
-                //         if (error) {
-                //             console.log(stderr);
-                //             rej(error);
-                //         } else {
-                //             console.log(stdout);
-                //         }                
-                //         res();
-                //     });
-                // });
                 await new Promise((res, rej) => {
                     let p = exec.exec(cmd);
                     p.on('data', (data) => {
