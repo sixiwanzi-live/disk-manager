@@ -50,7 +50,7 @@ export default class DiskService {
                         console.log(data);
                     });
                     p.on('exit', (code) => {
-                        console.log(`下载程序退出:${filename}, code:${code}`);
+                        console.log(`下载程序退出:${bv}, code:${code}`);
                         res();
                     });
                     p.on('error', (error) => {

@@ -13,6 +13,7 @@ export default class SegmentService {
         const bv        = ctx.request.query.bv;
         const startTime = ctx.request.query.startTime;
         const endTime   = ctx.request.query.endTime;
+        console.log(`req:${bv}, ${startTime}, ${endTime}`);
         // 检查bv是否合法
         if (!bv || bv.length !== 12) {
             throw error.disk.BvIllegal;
