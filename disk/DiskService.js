@@ -16,6 +16,10 @@ export default class DiskService {
      */
     save = async (ctx) => {
         const bv = ctx.request.body.bv;
+        return this.download(bv);
+    };
+
+    download = async (bv) => {
         // 检查bv是否合法
         if (!bv || bv.length !== 12) {
             throw error.disk.BvIllegal;
