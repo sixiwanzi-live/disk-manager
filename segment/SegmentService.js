@@ -1,5 +1,6 @@
 import { stat, utimes } from 'fs/promises';
 import exec from 'child_process';
+import { promisify } from 'util';
 import moment from 'moment';
 import error from "../error.js";
 import config from '../config.js';
@@ -46,15 +47,28 @@ export default class SegmentService {
             const cmd = `ffmpeg -i "${resource}" -r 30 -b:v ${config.segment.rate}K -ss ${toTime(startTime)} -to ${toTime(endTime)} "${output}"`;
             console.log(cmd);
             try {
+                // const { stdout, stderr } = await promisify(exec.exec)(cmd);
+                // stdout.on('data', (data) => {
+                //     console.log(data);
+                // })
+                // stdout.on('close', (code) => {
+                    
+                // })
                 await new Promise((res, rej) => {
                     exec.exec(cmd, (error, stdout, stderr) => {
                         if (error) {
-                            console.log(stderr);
+                            console.log(error);
                             rej(error);
                         } else {
-                            console.log(stdout);
+                            // console.log(stderr);
+                            stdout.on('data', (data) => {
+                                console.log(data);
+                            });
+                            stdout.on('close', (code) => {
+                                console.log(`切片处理结束:${filename}, code:${code}`);
+                                res();
+                            });
                         }                
-                        res();
                     });
                 });
             } catch (ex) {
