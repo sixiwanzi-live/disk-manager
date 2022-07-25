@@ -26,7 +26,7 @@ export default class SegmentService {
             await stat(resource);
         } catch (ex) {
             console.log(`素材视频${bv}未找到，即将下载该视频`);
-            ctx.diskService.download(bv);
+            await ctx.diskService.download(bv);
         }
 
         try {
