@@ -33,15 +33,29 @@ export default class DiskService {
             const cmd = `BBDown ${bv} -tv -F ${filepath}`;
             console.log(cmd);
             try {
+                // await new Promise((res, rej) => {
+                //     exec.exec(cmd, (error, stdout, stderr) => {
+                //         if (error) {
+                //             console.log(stderr);
+                //             rej(error);
+                //         } else {
+                //             console.log(stdout);
+                //         }                
+                //         res();
+                //     });
+                // });
                 await new Promise((res, rej) => {
-                    exec.exec(cmd, (error, stdout, stderr) => {
-                        if (error) {
-                            console.log(stderr);
-                            rej(error);
-                        } else {
-                            console.log(stdout);
-                        }                
+                    let p = exec.exec(cmd);
+                    p.on('data', (data) => {
+                        console.log(data);
+                    });
+                    p.on('exit', (code) => {
+                        console.log(`下载程序退出:${filename}, code:${code}`);
                         res();
+                    });
+                    p.on('error', (error) => {
+                        console.log(error);
+                        rej(error);
                     });
                 });
                 await PushApi.push('视频下载完成', bv);
