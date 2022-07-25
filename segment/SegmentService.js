@@ -46,7 +46,7 @@ export default class SegmentService {
             await stat(output); // 检查output是否存在，避免重复生成
         } catch (ex) {
             // const cmd = `ffmpeg -i "${resource}" -ss ${toTime(startTime)} -to ${toTime(endTime)} -c copy "${output}"`;
-            const cmd = `ffmpeg -ss ${toTime(startTime)} -to ${toTime(endTime)} -accruate_seek -i "${resource}" -c copy "${output}"`;
+            const cmd = `ffmpeg -ss ${toTime(startTime)} -to ${toTime(endTime)} -accurate_seek -i "${resource}" -c copy "${output}"`;
             console.log(cmd);
             try {
                 await new Promise((res, rej) => {
