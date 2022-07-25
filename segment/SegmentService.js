@@ -61,6 +61,10 @@ export default class SegmentService {
                     });
                     p.on('close', (code) => {
                         console.log(`切片处理结束:${filename}, code:${code}`);
+                        
+                    });
+                    p.on('exit', (code) => {
+                        console.log(`切片程序退出:${filename}, code:${code}`);
                         res();
                     });
                     // exec.exec(cmd, (error, stdout, stderr) => {
