@@ -36,10 +36,10 @@ export default class DiskService {
                 await new Promise((res, rej) => {
                     let p = spawn('BBDown', [bv, '-tv', '--skip-subtitle', '--skip-cover', '-F', filepath]);
                     p.stdout.on('data', (data) => {
-                        console.log('stdout: ' + data);
+                        console.log('stdout: ' + data.toString());
                     });
                     p.stderr.on('data', (data) => {
-                        console.log('stderr: ' + data);
+                        console.log('stderr: ' + data.toString());
                     });
                     p.on('close', (code) => {
                         console.log(`下载程序退出:${bv}, code:${code}`);
