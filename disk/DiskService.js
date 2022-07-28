@@ -1,5 +1,5 @@
 import {opendir, stat, unlink} from 'fs/promises';
-import exec from 'child_process';
+import { spawn } from 'child_process';
 import error from "../error.js";
 import config from '../config.js';
 import PushApi from '../api/PushApi.js';
@@ -34,18 +34,21 @@ export default class DiskService {
             console.log(cmd);
             try {
                 await new Promise((res, rej) => {
-                    let p = exec.exec(cmd);
-                    p.on('data', (data) => {
+                    let p = spawn(cmd);
+                    p.stdout.on('data', (data) => {
                         console.log(data);
                     });
-                    p.on('exit', (code) => {
+                    p.stderr.on('data', (data) => {
+                        console.log(data);
+                    });
+                    p.on('close', (code) => {
                         console.log(`下载程序退出:${bv}, code:${code}`);
                         res();
                     });
-                    p.on('error', (error) => {
-                        console.log(error);
-                        rej(error);
-                    });
+                    // p.on('error', (error) => {
+                    //     console.log(error);
+                    //     rej(error);
+                    // });
                 });
                 await PushApi.push('视频下载完成', bv);
 
