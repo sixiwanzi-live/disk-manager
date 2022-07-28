@@ -30,8 +30,6 @@ export default class DiskService {
             await stat(filepath);
         } catch (ex) {
             // 下载视频
-            // const cmd = `BBDown ${bv} -tv --skip-subtitle --skip-cover -F ${filepath}`;
-            // console.log(cmd);
             try {
                 await new Promise((res, rej) => {
                     let p = spawn('BBDown', [bv, '-tv', '--skip-subtitle', '--skip-cover', '-F', filepath]);
@@ -50,8 +48,15 @@ export default class DiskService {
                         rej(error);
                     });
                 });
-                await PushApi.push('视频下载完成', bv);
-
+                try {
+                    await stat(filepath);
+                    await PushApi.push('视频下载完成', bv);
+                } catch (ex2) {
+                    console.log(ex2);
+                    await PushApi.push('找不到下载视频', bv);
+                    throw ex2;
+                }
+                
                 // 调整硬盘空间
                 let lru = await this.__rebuild();
                 let total = lru.map(file => file.size).reduce((prev, curr) => prev + curr);
