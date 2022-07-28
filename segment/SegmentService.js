@@ -13,7 +13,8 @@ export default class SegmentService {
         const bv        = ctx.request.query.bv;
         const startTime = ctx.request.query.startTime;
         const endTime   = ctx.request.query.endTime;
-        const audio     = ctx.request.query.audio || false;
+        console.log(ctx.request.query.audio);
+        const audio     = ctx.request.query.audio || 'false';
         console.log(`req:${bv}, ${startTime}, ${endTime}, ${audio}`);
         // 检查bv是否合法
         if (!bv || bv.length !== 12) {
@@ -42,14 +43,14 @@ export default class SegmentService {
         }
 
         let filename = `${bv}-${toTime(startTime).replaceAll(':', '-')}--${toTime(endTime).replaceAll(':', '-')}`;
-        filename = audio ? filename + '.aac' : filename + '.mp4'; 
+        filename = audio === 'true' ? filename + '.aac' : filename + '.mp4'; 
         // const filename = `${bv}-${toTime(startTime).replaceAll(':', '-')}--${toTime(endTime).replaceAll(':', '-')}.mp4`;
         const output = `${config.disk.path}/segment/${filename}`;
         try {
             await stat(output); // 检查output是否存在，避免重复生成
         } catch (ex) {
             // const cmd = `ffmpeg -i "${resource}" -ss ${toTime(startTime)} -to ${toTime(endTime)} -c copy "${output}"`;
-            const cmd = audio ? 
+            const cmd = audio === 'true' ? 
                             `ffmpeg -vn -ss ${toTime(startTime)} -to ${toTime(endTime)} -accurate_seek -i "${resource}" -c copy -avoid_negative_ts 1 "${output}"` :
                             `ffmpeg -ss ${toTime(startTime)} -to ${toTime(endTime)} -accurate_seek -i "${resource}" -c copy -avoid_negative_ts 1 "${output}"`;
             // const cmd = `ffmpeg -ss ${toTime(startTime)} -to ${toTime(endTime)} -accurate_seek -i "${resource}" -c copy -avoid_negative_ts 1 "${output}"`;
