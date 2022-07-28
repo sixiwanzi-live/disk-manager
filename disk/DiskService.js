@@ -45,10 +45,10 @@ export default class DiskService {
                         console.log(`下载程序退出:${bv}, code:${code}`);
                         res();
                     });
-                    // p.on('error', (error) => {
-                    //     console.log(error);
-                    //     rej(error);
-                    // });
+                    p.on('error', (error) => {
+                        console.log(error);
+                        rej(error);
+                    });
                 });
                 await PushApi.push('视频下载完成', bv);
 
