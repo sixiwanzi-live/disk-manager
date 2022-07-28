@@ -30,11 +30,11 @@ export default class DiskService {
             await stat(filepath);
         } catch (ex) {
             // 下载视频
-            const cmd = `BBDown ${bv} -tv --skip-subtitle --skip-cover -F ${filepath}`;
+            // const cmd = `BBDown ${bv} -tv --skip-subtitle --skip-cover -F ${filepath}`;
             console.log(cmd);
             try {
                 await new Promise((res, rej) => {
-                    let p = spawn(cmd);
+                    let p = spawn('BBDown', [bv, '-tv', '--skip-subtitle', '--skip-cover', '-F', filepath]);
                     p.stdout.on('data', (data) => {
                         console.log(data);
                     });
