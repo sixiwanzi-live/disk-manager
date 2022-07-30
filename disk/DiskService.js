@@ -32,7 +32,7 @@ export default class DiskService {
             // 下载视频
             try {
                 await new Promise((res, rej) => {
-                    let p = spawn('BBDown', [bv, '-tv', '--skip-subtitle', '--skip-cover', '-F', filepath]);
+                    let p = spawn('BBDown', [bv, '-tv', '--skip-subtitle', '--skip-cover', '-p', '1', '-F', filepath]);
                     p.stdout.on('data', (data) => {
                         console.log('stdout: ' + data.toString());
                     });
