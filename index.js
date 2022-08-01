@@ -15,6 +15,13 @@ import SegmentService from './segment/SegmentService.js';
     app.context.segmentService = new SegmentService();
 
     /**
+     * hello
+     */
+    router.get('/hello', ctx => {
+        ctx.body = 'hello';
+    });
+
+    /**
      * disk
      */
     router.post('/disks', async ctx => {
