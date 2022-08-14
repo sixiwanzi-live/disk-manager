@@ -13,7 +13,7 @@ export default class SegmentService {
         const startTime = ctx.request.query.startTime;
         const endTime   = ctx.request.query.endTime;
         const audio     = ctx.request.query.audio || 'false';
-        const qn        = parseInt(ctx.request.query.qn || '80');
+        const qn        = parseInt(ctx.request.query.qn || '120');
         console.log(`req:${bv}, ${startTime}, ${endTime}, ${audio}, ${qn}`);
         // 检查bv是否合法
         if (!bv || bv.length !== 12) {
@@ -35,7 +35,7 @@ export default class SegmentService {
         } catch (ex) {}
 
         const cid = await BiliApi.fetchCid(bv);
-        const streamUrl = await BiliApi.fetchStreamUrl(bv, cid, audio === 'true' ? 64 : qn);
+        const streamUrl = await BiliApi.fetchStreamUrl(bv, cid, qn);
         console.log(streamUrl);
         
         try {
