@@ -32,17 +32,25 @@ export default {
         }
     },
     segment: {
-        Failed: {
+        CidNotFound: {
+            code: 500101130,
+            message: '查询视频cid失败'
+        },
+        StreamNotFound: {
             code: 500101131,
+            message: '获取视频流失败'
+        },
+        Failed: {
+            code: 500101132,
             message: 'FFMPEG生成视频片段失败'
+        },
+        ExtractAudioFailed: {
+            code: 500101133,
+            message: 'FFMPEG提取音频失败'
         },
         IntervalTooLong: {
             code: 400101130,
             message: `切片时长不应超过${config.segment.maxInterval}分钟`
-        },
-        ResourceNotFound: {
-            code: 400101131,
-            message: '素材视频不存在'
         }
     }
 }
