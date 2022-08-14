@@ -1,4 +1,4 @@
-import { unlink } from 'fs/promises';
+import { stat, unlink } from 'fs/promises';
 import {spawn} from 'child_process';
 import error from "../error.js";
 import config from '../config.js';
@@ -73,15 +73,17 @@ export default class SegmentService {
             throw error.segment.Failed;
         }
 
+        try {
+            await stat(videoOutput);
+        } catch (ex) {
+            console.log(ex);
+            throw error.segment.Failed;
+        }
+
         if (audio !== 'true') {
             await PushApi.push('片段制作完成', videoFile);
             return {filename: videoFile};
         }
-
-        // 等待视频切片处理完毕
-        // await new Promise((res, rej) => {
-        //     setTimeout(res, 1000);
-        // });
 
         try {
             await new Promise((res, rej) => {
@@ -108,6 +110,12 @@ export default class SegmentService {
                     rej(error);
                 });
             });
+        } catch (ex) {
+            console.log(ex);
+            throw error.segment.ExtractAudioFailed;
+        }
+        try {
+            await stat(audioOutput);
         } catch (ex) {
             console.log(ex);
             throw error.segment.ExtractAudioFailed;
