@@ -31,9 +31,7 @@ export default class SegmentService {
         try {
             await unlink(videoOutput);
             await unlink(audioOutput);
-        } catch (ex) {
-            console.log(ex);
-        }
+        } catch (ex) {}
 
         const cid = await BiliApi.fetchCid(bv);
         const streamUrl = await BiliApi.fetchStreamUrl(bv, cid, audio === 'true' ? 64 : 120);

@@ -5,7 +5,7 @@ import config from '../config.js';
 export default class BiliApi {
     static async fetchCid(bv) {
         try {
-            const res = await axios.get(`https://api.bilibili.com/x/web-interface/view?bvid=${bv}`);
+            const res = await axios.get(`http://api.bilibili.com/x/web-interface/view?bvid=${bv}`);
             return res.data.data.cid;
         } catch (ex) {
             console.log(ex.response.data);
@@ -14,7 +14,7 @@ export default class BiliApi {
     }
 
     static async fetchStreamUrl(bv, cid, qn) {
-        const playurl = `https://api.bilibili.com/x/player/playurl?bvid=${bv}&cid=${cid}&qn=${qn}&fourk=1`;
+        const playurl = `http://api.bilibili.com/x/player/playurl?bvid=${bv}&cid=${cid}&qn=${qn}&fourk=1`;
         console.log(playurl);
         let url = "";
         while (true) {
