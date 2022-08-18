@@ -25,7 +25,7 @@ export default class DiskService {
             throw error.disk.BvIllegal;
         }
 
-        const filepath = `${config.disk.path}/audio/${bv}.m4a`;
+        const filepath = `${config.disk.path}/audio/${bv}`;
         try {
             await stat(filepath);
         } catch (ex) {
@@ -49,7 +49,7 @@ export default class DiskService {
                     });
                 });
                 try {
-                    await stat(filepath);
+                    await stat(`${filepath}.m4a`);
                     await PushApi.push('音频下载完成', bv);
                 } catch (ex2) {
                     console.log(ex2);
