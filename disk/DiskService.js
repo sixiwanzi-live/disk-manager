@@ -25,14 +25,14 @@ export default class DiskService {
             throw error.disk.BvIllegal;
         }
 
-        const filepath = `${config.disk.path}/video/${bv}.mp4`;
+        const filepath = `${config.disk.path}/audio/${bv}.aac`;
         try {
             await stat(filepath);
         } catch (ex) {
             // 下载视频
             try {
                 await new Promise((res, rej) => {
-                    let p = spawn('BBDown', [bv, '-tv', '--skip-subtitle', '--skip-cover', '-F', filepath]);
+                    let p = spawn('BBDown', [bv, '-tv', '--skip-subtitle', '--skip-cover', '--audio-only', '-F', filepath]);
                     p.stdout.on('data', (data) => {
                         console.log('stdout: ' + data.toString());
                     });
@@ -56,21 +56,6 @@ export default class DiskService {
                     await PushApi.push('找不到下载视频', bv);
                     throw ex2;
                 }
-                
-                // 调整硬盘空间
-                let lru = await this.__rebuild();
-                let total = lru.map(file => file.size).reduce((prev, curr) => prev + curr);
-                console.log(`调整前空间大小为${(total / 1024 / 1024 / 1024).toFixed(2)}G`);
-                while (total >= config.disk.limit) {
-                    const file = lru[0];
-                    total -= file.size;
-                    lru.shift(); // 删除lru第一项
-                    await unlink(`${config.disk.path}/video/${file.name}`);
-                    console.log(`delete ${file.name}`);
-                    await PushApi.push('磁盘空间调整', 
-                                        `删除${file.name}(${(file.size / 1024 / 1024 / 1024).toFixed(2)}G), 删除后总空间为${(total / 1024 / 1024 / 1024).toFixed(2)}G`);
-                }
-                console.log(`调整后空间大小为${(total / 1024 / 1024 / 1024).toFixed(2)}G`);
             } catch (ex) {
                 console.log(ex);
                 throw {
@@ -81,22 +66,4 @@ export default class DiskService {
         }
         return {};
     };
-
-    __rebuild = async () => {
-        let lru = [];
-        const dir = await opendir(`${config.disk.path}/video`);
-        for await (const dirent of dir) {
-            if (dirent.isFile()) {
-                const filepath = `${config.disk.path}/video/${dirent.name}`;
-                const info = await stat(filepath);
-                lru.push({
-                    name: dirent.name,
-                    size: info.size,
-                    datetime: info.mtime
-                });
-            }
-        }
-        lru.sort((a, b) => a.datetime - b.datetime);
-        return lru;
-    }
 }
