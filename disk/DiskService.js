@@ -25,7 +25,7 @@ export default class DiskService {
             throw error.disk.BvIllegal;
         }
 
-        const filepath = `${config.disk.path}/audio/${bv}.aac`;
+        const filepath = `${config.disk.path}/audio/${bv}`;
         try {
             await stat(filepath);
         } catch (ex) {
