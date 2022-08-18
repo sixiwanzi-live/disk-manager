@@ -1,4 +1,4 @@
-import {opendir, stat, unlink} from 'fs/promises';
+import { stat } from 'fs/promises';
 import { spawn } from 'child_process';
 import error from "../error.js";
 import config from '../config.js';
@@ -12,7 +12,7 @@ export default class DiskService {
      * @returns 
      * @throw error.push.Failed     当调用PushApi因网络原因失败时抛出该异常
      * @throw error.disk.BvIllegal  bv为空，或者bv长度不足12
-     * @throw error.server          BBDown下载视频失败 
+     * @throw error.server          BBDown下载音频失败 
      */
     save = async (ctx) => {
         const bv = ctx.request.body.bv;
@@ -25,11 +25,11 @@ export default class DiskService {
             throw error.disk.BvIllegal;
         }
 
-        const filepath = `${config.disk.path}/audio/${bv}`;
+        const filepath = `${config.disk.path}/audio/${bv}.m4a`;
         try {
             await stat(filepath);
         } catch (ex) {
-            // 下载视频
+            // 下载音频
             try {
                 await new Promise((res, rej) => {
                     let p = spawn('BBDown', [bv, '-tv', '--skip-subtitle', '--skip-cover', '--audio-only', '-F', filepath]);
@@ -50,10 +50,10 @@ export default class DiskService {
                 });
                 try {
                     await stat(filepath);
-                    await PushApi.push('视频下载完成', bv);
+                    await PushApi.push('音频下载完成', bv);
                 } catch (ex2) {
                     console.log(ex2);
-                    await PushApi.push('找不到下载视频', bv);
+                    await PushApi.push('找不到下载音频', bv);
                     throw ex2;
                 }
             } catch (ex) {
