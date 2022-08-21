@@ -52,6 +52,7 @@ export default class SegmentService {
         console.log(`源视频地址:${src}`);
 
         let cmd = [
+            '-threads', 8,
             '-ss', toTime(startTime), 
             '-to', toTime(endTime), 
             '-accurate_seek', 

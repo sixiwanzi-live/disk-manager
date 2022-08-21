@@ -4,6 +4,7 @@ import error from "../error.js";
 import config from '../config.js';
 import BiliApi from '../api/BiliApi.js';
 import PushApi from '../api/PushApi.js';
+import ZimuApi from '../api/ZimuApi.js';
 
 export default class DiskService {
 
@@ -17,8 +18,60 @@ export default class DiskService {
      */
     save = async (ctx) => {
         const bv = ctx.request.body.bv;
-        return this.downloadByBv(bv);
+        if (bv) {
+            return this.downloadByBv(bv);
+        }
+        
+        const clipId = ctx.request.body.clipId;
+        if (clipId) {
+            return this.downloadByClipId(clipId);
+        }
     };
+
+    downloadByClipId = async (clipId) => {
+        // 获取clip基础信息
+        const filepath = `${config.disk.path}/video/${clipId}.mp4`;
+        try {
+            await stat(filepath);
+            return {};
+        } catch (ex) {}
+
+        const clip = await ZimuApi.findClipById(clipId);
+        console.log(clip);
+        if (clip === 1) {
+
+        } else {
+            try {
+                await new Promise((res, rej) => {
+                    let cmd = [
+                        '-i', `https://${clip.playUrl}`,
+                        '-O', filepath
+                    ];
+                    let p = spawn('wget', cmd);
+                    p.stdout.on('data', (data) => {
+                        console.log('stdout: ' + data.toString());
+                    });
+                    p.stderr.on('data', (data) => {
+                        console.log('stderr: ' + data.toString());
+                    });
+                    p.on('close', (code) => {
+                        console.log(`下载程序退出:${clip.id}-${clip.title}, code:${code}`);
+                        res();
+                    });
+                    p.on('error', (error) => {
+                        console.log(error);
+                        rej(error);
+                    });
+                });
+            } catch (ex) {
+                console.log(ex);
+                throw {
+                    code: error.disk.DownloadFailed.code,
+                    message: ex
+                }
+            }
+        }
+    }
 
     downloadByBv = async (bv) => {
         // 检查bv是否合法
@@ -38,7 +91,16 @@ export default class DiskService {
         console.log(`源视频地址:${src}`);
         try {
             await new Promise((res, rej) => {
-                let p = spawn('wget', [src, `--header="Referer:${config.segment.referer}"`, `--user-agent="${config.segment.userAgent}"`, '-O', filepath]);
+                let cmd = [
+                    '-threads', 8,
+                    '-user_agent', config.segment.userAgent, 
+                    '-headers', `Referer: ${config.segment.referer}`,
+                    '-i', src,
+                    '-c', 'copy',
+                    filepath,
+                    '-v', 'debug'
+                ];
+                let p = spawn('ffmpeg', cmd);
                 p.stdout.on('data', (data) => {
                     console.log('stdout: ' + data.toString());
                 });
