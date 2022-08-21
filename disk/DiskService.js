@@ -2,6 +2,7 @@ import { stat } from 'fs/promises';
 import { spawn } from 'child_process';
 import error from "../error.js";
 import config from '../config.js';
+import BiliApi from '../api/BiliApi.js';
 import PushApi from '../api/PushApi.js';
 
 export default class DiskService {
