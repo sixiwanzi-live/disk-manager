@@ -16,7 +16,7 @@ export default class DiskService {
      */
     save = async (ctx) => {
         const bv = ctx.request.body.bv;
-        return this.download(bv);
+        return this.downloadByBv(bv);
     };
 
     downloadByBv = async (bv) => {
