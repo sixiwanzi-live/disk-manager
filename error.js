@@ -51,6 +51,16 @@ export default {
         IntervalTooLong: {
             code: 400101130,
             message: `切片时长不应超过${config.segment.maxInterval}分钟`
+        },
+        IntervalTooShort: {
+            code: 400101131,
+            message: `切片时长不应少于1秒钟`
+        }
+    },
+    zimu: {
+        ClipNotFound: {
+            code: 400101140,
+            message: '视频不存在'
         }
     }
 }

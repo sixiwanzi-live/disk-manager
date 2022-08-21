@@ -19,49 +19,53 @@ export default class DiskService {
         return this.download(bv);
     };
 
-    download = async (bv) => {
+    downloadByBv = async (bv) => {
         // 检查bv是否合法
         if (!bv || bv.length !== 12) {
             throw error.disk.BvIllegal;
         }
 
-        const filepath = `${config.disk.path}/video/${bv}.mp4`;
+        const filepath = `${config.disk.path}/tmp/${bv}.mp4`;
         try {
             await stat(filepath);
-        } catch (ex) {
-            // 下载视频
-            try {
-                await new Promise((res, rej) => {
-                    let p = spawn('BBDown', [bv, '-tv', '--skip-subtitle', '--skip-cover', '-F', filepath]);
-                    p.stdout.on('data', (data) => {
-                        console.log('stdout: ' + data.toString());
-                    });
-                    p.stderr.on('data', (data) => {
-                        console.log('stderr: ' + data.toString());
-                    });
-                    p.on('close', (code) => {
-                        console.log(`下载程序退出:${bv}, code:${code}`);
-                        res();
-                    });
-                    p.on('error', (error) => {
-                        console.log(error);
-                        rej(error);
-                    });
+            return {};
+        } catch (ex) {}
+
+        // 下载视频
+        const cid = await BiliApi.fetchCid(bv);
+        const src = await BiliApi.fetchStreamUrl(bv, cid, 120);
+        console.log(`源视频地址:${src}`);
+        try {
+            await new Promise((res, rej) => {
+                let p = spawn('wget', [src, `--header="Referer:${config.segment.referer}"`, `--user-agent="${config.segment.userAgent}"`, '-O', filepath]);
+                p.stdout.on('data', (data) => {
+                    console.log('stdout: ' + data.toString());
                 });
-                try {
-                    await stat(filepath);
-                    await PushApi.push('视频下载完成', bv);
-                } catch (ex2) {
-                    console.log(ex2);
-                    await PushApi.push('找不到下载视频', bv);
-                    throw ex2;
-                }
-            } catch (ex) {
-                console.log(ex);
-                throw {
-                    code: error.disk.DownloadFailed.code,
-                    message: ex
-                }
+                p.stderr.on('data', (data) => {
+                    console.log('stderr: ' + data.toString());
+                });
+                p.on('close', (code) => {
+                    console.log(`下载程序退出:${bv}, code:${code}`);
+                    res();
+                });
+                p.on('error', (error) => {
+                    console.log(error);
+                    rej(error);
+                });
+            });
+            try {
+                await stat(filepath);
+                await PushApi.push('视频下载完成', bv);
+            } catch (ex2) {
+                console.log(ex2);
+                await PushApi.push('找不到下载视频', bv);
+                throw ex2;
+            }
+        } catch (ex) {
+            console.log(ex);
+            throw {
+                code: error.disk.DownloadFailed.code,
+                message: ex
             }
         }
         return {};

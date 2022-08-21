@@ -31,7 +31,7 @@ import SegmentService from './segment/SegmentService.js';
     /**
      * segment
      */
-    router.get('/segments', async ctx => {
+    router.get('/clips/:clipId/segments', async ctx => {
         ctx.body = await ctx.segmentService.make(ctx);
     });
 
