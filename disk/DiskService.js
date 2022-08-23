@@ -21,7 +21,12 @@ export default class DiskService {
         if (bv) {
             return this.downloadByBv(bv);
         }
-        
+
+        const url = ctx.request.body.url;
+        if (url) {
+            return this.downloadByUrl(url);
+        }
+
         const clipId = ctx.request.body.clipId;
         if (clipId) {
             return this.downloadByClipId(clipId);
@@ -38,37 +43,50 @@ export default class DiskService {
 
         const clip = await ZimuApi.findClipById(clipId);
         console.log(clip);
-        if (clip === 1) {
 
+        let src = '';
+        if (clip.type === 1) {
+            // 下载视频
+            const bv = clip.playUrl.substring(clip.playUrl.length - 12);
+            const cid = await BiliApi.fetchCid(bv);
+            src = await BiliApi.fetchStreamUrl(bv, cid, 120); 
         } else {
-            try {
-                await new Promise((res, rej) => {
-                    let cmd = [
-                        '-i', `https://${clip.playUrl}`,
-                        '-O', filepath
-                    ];
-                    let p = spawn('wget', cmd);
-                    p.stdout.on('data', (data) => {
-                        console.log('stdout: ' + data.toString());
-                    });
-                    p.stderr.on('data', (data) => {
-                        console.log('stderr: ' + data.toString());
-                    });
-                    p.on('close', (code) => {
-                        console.log(`下载程序退出:${clip.id}-${clip.title}, code:${code}`);
-                        res();
-                    });
-                    p.on('error', (error) => {
-                        console.log(error);
-                        rej(error);
-                    });
+            src = `https://${clip.playUrl}`;
+        }
+        console.log(`源视频地址:${src}`);
+
+        try {
+            await new Promise((res, rej) => {
+                let cmd = [
+                    '-threads', 8,
+                    '-user_agent', config.segment.userAgent, 
+                    '-headers', `Referer: ${config.segment.referer}`,
+                    '-i', src,
+                    '-c', 'copy',
+                    filepath,
+                    '-v', 'debug'
+                ];
+                let p = spawn('ffmpeg', cmd);
+                p.stdout.on('data', (data) => {
+                    console.log('stdout: ' + data.toString());
                 });
-            } catch (ex) {
-                console.log(ex);
-                throw {
-                    code: error.disk.DownloadFailed.code,
-                    message: ex
-                }
+                p.stderr.on('data', (data) => {
+                    console.log('stderr: ' + data.toString());
+                });
+                p.on('close', (code) => {
+                    console.log(`下载程序退出:${clip.id}-${clip.title}, code:${code}`);
+                    res();
+                });
+                p.on('error', (error) => {
+                    console.log(error);
+                    rej(error);
+                });
+            });
+        } catch (ex) {
+            console.log(ex);
+            throw {
+                code: error.disk.DownloadFailed.code,
+                message: ex
             }
         }
     }
@@ -122,6 +140,61 @@ export default class DiskService {
             } catch (ex2) {
                 console.log(ex2);
                 await PushApi.push('找不到下载视频', bv);
+                throw ex2;
+            }
+        } catch (ex) {
+            console.log(ex);
+            throw {
+                code: error.disk.DownloadFailed.code,
+                message: ex
+            }
+        }
+        return {};
+    };
+
+    downloadByUrl = async (url) => {
+        const fields = url.split('/');
+        const filename = fields[fields.length - 1].split('.')[0];
+        const filepath = `${config.disk.path}/tmp/${filename}.mp4`;
+        try {
+            await stat(filepath);
+            return {};
+        } catch (ex) {}
+
+        // 下载视频
+        const src = url;
+        console.log(`源视频地址:${src}`);
+        try {
+            await new Promise((res, rej) => {
+                let cmd = [
+                    '-threads', 8,
+                    '-i', src,
+                    '-c', 'copy',
+                    filepath,
+                    '-v', 'debug'
+                ];
+                let p = spawn('ffmpeg', cmd);
+                p.stdout.on('data', (data) => {
+                    console.log('stdout: ' + data.toString());
+                });
+                p.stderr.on('data', (data) => {
+                    console.log('stderr: ' + data.toString());
+                });
+                p.on('close', (code) => {
+                    console.log(`下载程序退出:${filename}, code:${code}`);
+                    res();
+                });
+                p.on('error', (error) => {
+                    console.log(error);
+                    rej(error);
+                });
+            });
+            try {
+                await stat(filepath);
+                await PushApi.push('视频下载完成', filename);
+            } catch (ex2) {
+                console.log(ex2);
+                await PushApi.push('找不到下载视频', filename);
                 throw ex2;
             }
         } catch (ex) {
