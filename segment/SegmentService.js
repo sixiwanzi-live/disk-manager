@@ -26,7 +26,7 @@ export default class SegmentService {
             throw error.segment.IntervalTooLong;
         }
 
-        let filename = `[clip-${clip.id}]-${toTime(startTime).replaceAll(':', '-')}--${toTime(endTime).replaceAll(':', '-')}`;
+        let filename = `clip-${clip.id}-${toTime(startTime).replaceAll(':', '-')}--${toTime(endTime).replaceAll(':', '-')}`;
         if (audio === 'true') {
             filename = `${filename}.aac`;
         } else {
