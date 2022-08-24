@@ -15,9 +15,6 @@ export default class SegmentService {
         const endTime   = ctx.request.query.endTime;
         const audio     = ctx.request.query.audio || 'false';
         console.log(`req:${clipId}, ${startTime}, ${endTime}, ${audio}`);
-        // 获取clip基础信息
-        const clip = await ZimuApi.findClipById(clipId);
-        console.log(clip);
         
         if (endTime - startTime <= 1000) {
             throw error.segment.IntervalTooShort;
@@ -26,7 +23,7 @@ export default class SegmentService {
             throw error.segment.IntervalTooLong;
         }
 
-        let filename = `clip-${clip.id}-${toTime(startTime).replaceAll(':', '-')}--${toTime(endTime).replaceAll(':', '-')}`;
+        let filename = `clip-${clipId}-${toTime(startTime).replaceAll(':', '-')}--${toTime(endTime).replaceAll(':', '-')}`;
         if (audio === 'true') {
             filename = `${filename}.aac`;
         } else {
@@ -38,33 +35,55 @@ export default class SegmentService {
             await unlink(output);
         } catch (ex) {}
 
-        let src = '';
-        if (clip.type === 1) {
-            // 获取B站视频源
-            // playUrl的格式为player.bilibili.com/player.html?bvid=BV1Mg411C7FP,所以取后12个字符为bv
-            const bv = clip.playUrl.substring(clip.playUrl.length - 12);
-            console.log(bv);
-            const cid = await BiliApi.fetchCid(bv);
-            src = await BiliApi.fetchStreamUrl(bv, cid, audio === 'true' ? 80: 120);
-        } else {
-            src = `https://${clip.playUrl}`;
-        }
-        console.log(`源视频地址:${src}`);
+        // 获取clip基础信息
+        const clip = await ZimuApi.findClipById(clipId);
+        console.log(clip);
 
-        let cmd = [
-            '-threads', 8,
-            '-ss', toTime(startTime), 
-            '-to', toTime(endTime), 
-            '-accurate_seek', 
-            '-seekable', 1, 
-            '-user_agent', config.segment.userAgent, 
-            '-headers', `Referer: ${config.segment.referer}`,
-            '-i', src,
-            '-c', 'copy',
-            '-avoid_negative_ts', 1,
-            output,
-            '-v', 'debug'
-        ];
+        let cmd = [];
+        try {
+            const src = `${config.disk.path}/video/${clipId}.mp4`;
+            await stat(src);
+            console.log(`源视频地址:${src}`);
+            cmd = [
+                '-threads', 8,
+                '-ss', toTime(startTime), 
+                '-to', toTime(endTime), 
+                '-accurate_seek', 
+                '-seekable', 1, 
+                '-i', src,
+                '-c', 'copy',
+                '-avoid_negative_ts', 1,
+                output,
+                '-v', 'debug'
+            ];
+        } catch (ex) {
+            let src = '';
+            if (clip.type === 1) {
+                // 获取B站视频源
+                // playUrl的格式为player.bilibili.com/player.html?bvid=BV1Mg411C7FP,所以取后12个字符为bv
+                const bv = clip.playUrl.substring(clip.playUrl.length - 12);
+                const cid = await BiliApi.fetchCid(bv);
+                src = await BiliApi.fetchStreamUrl(bv, cid, audio === 'true' ? 80: 120);
+            } else {
+                src = `https://${clip.playUrl}`;
+            }
+            console.log(`源视频地址:${src}`);
+            cmd = [
+                '-threads', 8,
+                '-ss', toTime(startTime), 
+                '-to', toTime(endTime), 
+                '-accurate_seek', 
+                '-seekable', 1, 
+                '-user_agent', config.segment.userAgent, 
+                '-headers', `Referer: ${config.segment.referer}`,
+                '-i', src,
+                '-c', 'copy',
+                '-avoid_negative_ts', 1,
+                output,
+                '-v', 'debug'
+            ];
+        }
+        
         if (audio === 'true') {
             cmd = ['-vn', ...cmd];
         }
