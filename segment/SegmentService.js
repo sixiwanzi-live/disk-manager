@@ -130,6 +130,7 @@ export default class SegmentService {
                     rej(error);
                 });
             });
+            await stat(output);
         } catch (ex) {
             // 如果本地源生成切片失败，则使用远程源
             let src = '';
@@ -179,17 +180,11 @@ export default class SegmentService {
                         rej(error);
                     });
                 });
+                await stat(output);
             } catch (ex) {
                 console.log(ex);
                 throw error.segment.Failed;
             }
-        }
-
-        try {
-            await stat(output);
-        } catch (ex) {
-            console.log(ex);
-            throw error.segment.Failed;
         }
 
         await PushApi.push('片段制作完成', `${clip.id},${clip.title}, ${filename}`);
