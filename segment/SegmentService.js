@@ -1,5 +1,6 @@
 import { stat, unlink } from 'fs/promises';
 import {spawn} from 'child_process';
+import { EventEmitter } from 'events';
 import error from "../error.js";
 import config from '../config.js';
 import {toTime} from '../util.js';
@@ -8,6 +9,57 @@ import PushApi from '../api/PushApi.js';
 import ZimuApi from '../api/ZimuApi.js';
 
 export default class SegmentService {
+
+    constructor() {
+        this.emitter = new EventEmitter();
+        this.emitter.on('cache', async (clipId, url) => {
+            const output = `${config.disk.path}/video/${clipId}.mp4`;
+            try {
+                await stat(output);
+            } catch (ex) {
+                try {
+                    await new Promise((res, rej) => {
+                        let cmd = [
+                            '-threads', 8,
+                            '-i', url,
+                            '-c', 'copy',
+                            output,
+                            '-v', 'debug'
+                        ];
+                        let p = spawn('ffmpeg', cmd);
+                        p.stdout.on('data', (data) => {
+                            console.log('stdout: ' + data.toString());
+                        });
+                        p.stderr.on('data', (data) => {
+                            console.log('stderr: ' + data.toString());
+                        });
+                        p.on('close', (code) => {
+                            console.log(`下载程序退出:${filename}, code:${code}`);
+                            res();
+                        });
+                        p.on('error', (error) => {
+                            console.log(error);
+                            rej(error);
+                        });
+                    });
+                    try {
+                        await stat(output);
+                        await PushApi.push('视频下载完成', `${clipId}.mp4`);
+                    } catch (ex2) {
+                        console.log(ex2);
+                        await PushApi.push('找不到下载视频', `${clipId}.mp4`);
+                        throw ex2;
+                    }
+                } catch (ex) {
+                    console.log(ex);
+                    throw {
+                        code: error.disk.DownloadFailed.code,
+                        message: ex
+                    }
+                }
+            }
+        });
+    }
 
     make = async (ctx) => {
         const clipId    = ctx.params.clipId;
@@ -67,6 +119,7 @@ export default class SegmentService {
                 src = `https://${clip.playUrl}`;
             }
             console.log(`源视频地址:${src}`);
+            this.emitter.emit('cache', clipId, src);
             cmd = [
                 '-threads', 8,
                 '-ss', toTime(startTime), 
