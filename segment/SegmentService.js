@@ -94,13 +94,12 @@ export default class SegmentService {
         const clip = await ZimuApi.findClipById(clipId);
         console.log(clip);
 
-        let cmd = [];
         try {
+            // 先尝试使用本地源生成切片
             const src = `${config.disk.path}/video/${clipId}.mp4`;
             const res = await stat(src);
-            console.log(res);
             console.log(`源视频地址:${src}`);
-            cmd = [
+            let cmd = [
                 '-threads', 8,
                 '-ss', toTime(startTime), 
                 '-to', toTime(endTime), 
@@ -111,39 +110,9 @@ export default class SegmentService {
                 output,
                 '-v', 'debug'
             ];
-        } catch (ex) {
-            let src = '';
-            if (clip.type === 1) {
-                // 获取B站视频源
-                // playUrl的格式为player.bilibili.com/player.html?bvid=BV1Mg411C7FP,所以取后12个字符为bv
-                const bv = clip.playUrl.substring(clip.playUrl.length - 12);
-                const cid = await BiliApi.fetchCid(bv);
-                src = await BiliApi.fetchStreamUrl(bv, cid, audio === 'true' ? 80: 120);
-            } else {
-                src = `https://${clip.playUrl}`;
+            if (audio === 'true') {
+                cmd = ['-vn', ...cmd];
             }
-            console.log(`源视频地址:${src}`);
-            this.emitter.emit('cache', clipId, src);
-            cmd = [
-                '-threads', 8,
-                '-ss', toTime(startTime), 
-                '-to', toTime(endTime), 
-                '-accurate_seek', 
-                '-seekable', 1, 
-                '-user_agent', config.segment.userAgent, 
-                '-headers', `Referer: ${config.segment.referer}`,
-                '-i', src,
-                '-c', 'copy',
-                '-avoid_negative_ts', 1,
-                output,
-                '-v', 'debug'
-            ];
-        }
-        
-        if (audio === 'true') {
-            cmd = ['-vn', ...cmd];
-        }
-        try {
             await new Promise((res, rej) => {
                 let p = spawn('ffmpeg', cmd);
                 p.stdout.on('data', (data) => {
@@ -162,8 +131,58 @@ export default class SegmentService {
                 });
             });
         } catch (ex) {
-            console.log(ex);
-            throw error.segment.Failed;
+            // 如果本地源生成切片失败，则使用远程源
+            let src = '';
+            if (clip.type === 1) {
+                // 获取B站视频源
+                // playUrl的格式为player.bilibili.com/player.html?bvid=BV1Mg411C7FP,所以取后12个字符为bv
+                const bv = clip.playUrl.substring(clip.playUrl.length - 12);
+                const cid = await BiliApi.fetchCid(bv);
+                src = await BiliApi.fetchStreamUrl(bv, cid, audio === 'true' ? 80: 120);
+            } else {
+                src = `https://${clip.playUrl}`;
+            }
+            console.log(`源视频地址:${src}`);
+            this.emitter.emit('cache', clipId, src);
+            let cmd = [
+                '-threads', 8,
+                '-ss', toTime(startTime), 
+                '-to', toTime(endTime), 
+                '-accurate_seek', 
+                '-seekable', 1, 
+                '-user_agent', config.segment.userAgent, 
+                '-headers', `Referer: ${config.segment.referer}`,
+                '-i', src,
+                '-c', 'copy',
+                '-avoid_negative_ts', 1,
+                output,
+                '-v', 'debug'
+            ];
+            if (audio === 'true') {
+                cmd = ['-vn', ...cmd];
+            }
+            try {
+                await new Promise((res, rej) => {
+                    let p = spawn('ffmpeg', cmd);
+                    p.stdout.on('data', (data) => {
+                        console.log('stdout: ' + data.toString());
+                    });
+                    p.stderr.on('data', (data) => {
+                        console.log('stderr: ' + data.toString());
+                    });
+                    p.on('close', (code) => {
+                        console.log(`ffmpeg退出:${clip.id}-${clip.title}, code:${code}`);
+                        res();
+                    });
+                    p.on('error', (error) => {
+                        console.log(error);
+                        rej(error);
+                    });
+                });
+            } catch (ex) {
+                console.log(ex);
+                throw error.segment.Failed;
+            }
         }
 
         try {
