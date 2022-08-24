@@ -34,7 +34,7 @@ export default class SegmentService {
                             console.log('stderr: ' + data.toString());
                         });
                         p.on('close', (code) => {
-                            console.log(`下载程序退出:${filename}, code:${code}`);
+                            console.log(`下载程序退出:${clipId}, code:${code}`);
                             res();
                         });
                         p.on('error', (error) => {
