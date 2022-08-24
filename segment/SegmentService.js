@@ -49,7 +49,6 @@ export default class SegmentService {
                 '-ss', toTime(startTime), 
                 '-to', toTime(endTime), 
                 '-accurate_seek', 
-                '-seekable', 1, 
                 '-i', src,
                 '-c', 'copy',
                 '-avoid_negative_ts', 1,
