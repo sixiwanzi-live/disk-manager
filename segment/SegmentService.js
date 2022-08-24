@@ -16,7 +16,7 @@ export default class SegmentService {
             const output = `${config.disk.path}/video/${clipId}.mp4`;
             try {
                 const res = await stat(output);
-                console.log(res);
+                console.log('------------------------------------------------------------------------', res);
             } catch (ex) {
                 try {
                     await new Promise((res, rej) => {
