@@ -97,7 +97,8 @@ export default class SegmentService {
         let cmd = [];
         try {
             const src = `${config.disk.path}/video/${clipId}.mp4`;
-            await stat(src);
+            const res = await stat(src);
+            console.log(res);
             console.log(`源视频地址:${src}`);
             cmd = [
                 '-threads', 8,
