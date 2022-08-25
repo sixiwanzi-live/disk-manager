@@ -99,7 +99,6 @@ export default class SegmentService {
             const res = await stat(src);
             console.log(`源视频地址:${src}`);
             let cmd = [
-                '-threads', 8,
                 '-ss', toTime(startTime), 
                 '-to', toTime(endTime), 
                 '-accurate_seek', 
