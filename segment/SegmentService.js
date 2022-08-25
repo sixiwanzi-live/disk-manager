@@ -20,7 +20,6 @@ export default class SegmentService {
                 try {
                     await new Promise((res, rej) => {
                         let cmd = [
-                            '-threads', 8,
                             '-user_agent', config.segment.userAgent, 
                             '-headers', `Referer: ${config.segment.referer}`,
                             '-i', url,
@@ -144,7 +143,6 @@ export default class SegmentService {
             console.log(`源视频地址:${src}`);
             this.emitter.emit('cache', clipId, src);
             let cmd = [
-                '-threads', 8,
                 '-ss', toTime(startTime), 
                 '-to', toTime(endTime), 
                 '-accurate_seek', 
