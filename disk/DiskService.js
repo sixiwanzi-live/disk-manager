@@ -58,7 +58,6 @@ export default class DiskService {
         try {
             await new Promise((res, rej) => {
                 let cmd = [
-                    '-threads', 8,
                     '-user_agent', config.segment.userAgent, 
                     '-headers', `Referer: ${config.segment.referer}`,
                     '-i', src,
@@ -110,7 +109,6 @@ export default class DiskService {
         try {
             await new Promise((res, rej) => {
                 let cmd = [
-                    '-threads', 8,
                     '-user_agent', config.segment.userAgent, 
                     '-headers', `Referer: ${config.segment.referer}`,
                     '-i', src,
@@ -167,7 +165,6 @@ export default class DiskService {
         try {
             await new Promise((res, rej) => {
                 let cmd = [
-                    '-threads', 8,
                     '-i', src,
                     '-c', 'copy',
                     filepath,
