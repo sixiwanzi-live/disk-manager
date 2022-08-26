@@ -24,7 +24,8 @@ export default class BiliApi {
                         "Cache-Control": "no-cache",
                         "Accept-Encoding": "gzip, deflate, br",
                         "User-Agent": config.segment.userAgent,
-                        "Cookie": `SESSDATA=${config.segment.sessdata};`
+                        //"Cookie": `SESSDATA=${config.segment.sessdata};`
+                        "Cookie" : config.segment.cookie
                     },
                 });
                 url = res.data.data.durl[0].url;
