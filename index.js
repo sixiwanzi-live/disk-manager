@@ -40,7 +40,7 @@ import SegmentService from './segment/SegmentService.js';
         jsonLimit: config.web.bodyLimit
     }));
     
-    app.use(pino());
+    app.use(pino);
     app.use(cors());
     app.use(errorHandler);
     app.use(router.routes());
