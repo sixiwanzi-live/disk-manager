@@ -38,7 +38,7 @@ export default {
         },
         StreamNotFound: {
             code: 500101131,
-            message: '获取视频流失败'
+            message: 'B站接口异常'
         },
         Failed: {
             code: 500101132,
