@@ -10,6 +10,7 @@ import SegmentService from './segment/SegmentService.js';
 
 (async () => {
     const app = new Koa({ proxy: true });
+    app.use(pino());
     const router = new Router();
 
     app.context.diskService = new DiskService();
@@ -41,7 +42,6 @@ import SegmentService from './segment/SegmentService.js';
         jsonLimit: config.web.bodyLimit
     }));
     
-    app.use(pino());
     app.use(cors());
     app.use(errorHandler);
     app.use(router.routes());
