@@ -4,6 +4,7 @@ import error from '../error.js';
 import config from '../config.js';
 
 export default class BiliApi {
+    
     static async fetchCid(bv) {
         try {
             const res = await axios.get(`http://api.bilibili.com/x/web-interface/view?bvid=${bv}`);
