@@ -18,7 +18,7 @@ export default class BiliApi {
         const res = await new Promise((res, rej) => {
             const playurl = `https://api.bilibili.com/x/player/playurl?bvid=${bv}e&cid=${cid}&qn=${qn}&fourk=1`;
             console.log(playurl);
-            const cmd = `curl "${playurl}" \
+            const cmd = `curl '${playurl}' \
             -H 'authority: api.bilibili.com' \
             -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9' \
             -H 'accept-language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6' \
