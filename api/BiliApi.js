@@ -21,7 +21,7 @@ export default class BiliApi {
                 -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9' \
                 -H 'accept-language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6' \
                 -H 'cache-control: no-cache' \
-                -H 'cookie: innersign=0; buvid3=1920EF7B-3FB3-BEA9-FD90-67037CEA438C01952infoc; b_nut=1662693601; i-wanna-go-back=-1; b_lsid=1B13FF8E_1832042E345; _uuid=CD5FAFDA-E1032-6D59-BCEE-31061DC8E101D298025infoc; buvid4=572A6042-A327-97B8-126A-03818229BEAD03207-022090911-aN5fltImCgRefx+S2eNvlYhgto0P5W6gjYegZNabKIK2/4HOIqiOZw%3D%3D; fingerprint=f78113a1c74c8208efdaae54a7a8e2de; buvid_fp_plain=undefined; SESSDATA=b818c56d%2C1678245615%2Cbc4fb%2A91; bili_jct=e858ea051c26be03c91f455b07162456; DedeUserID=95111328; DedeUserID__ckMd5=3ce9e8c3da9ded5d; CURRENT_FNVAL=16; sid=73v8fnh9; b_ut=5; buvid_fp=f78113a1c74c8208efdaae54a7a8e2de' \
+                -H 'cookie: ${config.segment.cookie}' \
                 -H 'pragma: no-cache' \
                 -H 'sec-ch-ua: "Microsoft Edge";v="105", " Not;A Brand";v="99", "Chromium";v="105"' \
                 -H 'sec-ch-ua-mobile: ?0' \
