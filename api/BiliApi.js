@@ -23,11 +23,13 @@ export default class BiliApi {
                     headers: {
                         "Cache-Control": "no-cache",
                         "Accept-Encoding": "gzip, deflate, br",
+                        "Referer" : "https://player.bilibili.com/",
                         "User-Agent": config.segment.userAgent,
                         // "Cookie": `SESSDATA=${config.segment.sessdata};`
                         "Cookie" : config.segment.cookie
                     },
                 });
+                console.log(res.data);
                 url = res.data.data.durl[0].url;
             } catch (ex) {
                 console.log(ex.response.data);
