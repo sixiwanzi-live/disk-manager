@@ -16,9 +16,7 @@ export default class BiliApi {
 
     static async fetchStreamUrl(bv, cid, qn) {
         const res = await new Promise((res, rej) => {
-            const playurl = `https://api.bilibili.com/x/player/playurl?bvid=${bv}e&cid=${cid}&qn=${qn}&fourk=1`;
-            console.log(playurl);
-            const cmd = `curl '${playurl}' \
+            const cmd = `curl 'https://api.bilibili.com/x/player/playurl?bvid=${bv}e&cid=${cid}&qn=${qn}&fourk=1' \
             -H 'authority: api.bilibili.com' \
             -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9' \
             -H 'accept-language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6' \
@@ -33,7 +31,7 @@ export default class BiliApi {
             -H 'sec-fetch-site: none' \
             -H 'sec-fetch-user: ?1' \
             -H 'upgrade-insecure-requests: 1' \
-            -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.27' \
+            -H 'user-agent: ${config.segment.userAgent}' \
             --compressed`;
             exec(cmd, (error, stdout, stderr) => {
                 if (error) {
