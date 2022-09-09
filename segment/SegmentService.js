@@ -18,8 +18,8 @@ export default class SegmentService {
         const startTime = ctx.request.query.startTime;
         const endTime   = ctx.request.query.endTime;
         const audio     = ctx.request.query.audio || 'false';
-        //console.log(`req:${clipId}, ${startTime}, ${endTime}, ${audio}`);
-        ctx.log.info(`req:${clipId}, ${startTime}, ${endTime}, ${audio}`);
+        console.log(`req:${clipId}, ${startTime}, ${endTime}, ${audio}`);
+        // ctx.log.info(`req:${clipId}, ${startTime}, ${endTime}, ${audio}`);
         
         if (endTime - startTime <= 1000) {
             throw error.segment.IntervalTooShort;
