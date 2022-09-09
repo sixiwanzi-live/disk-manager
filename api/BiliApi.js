@@ -17,6 +17,7 @@ export default class BiliApi {
     static async fetchStreamUrl(bv, cid, qn) {
         const res = await new Promise((res, rej) => {
             const playurl = `https://api.bilibili.com/x/player/playurl?bvid=${bv}&cid=${cid}&qn=${qn}&fourk=1`;
+            console.log(playurl);
             const cmd = `curl '${playurl}' \
                 -H 'authority: api.bilibili.com' \
                 -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9' \
