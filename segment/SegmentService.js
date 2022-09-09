@@ -33,14 +33,17 @@ export default class SegmentService {
             filename = `${filename}.mp4`;
         }
         const output = `${config.disk.path}/segment/${filename}`;
-        // 删除可能存在的切片
-        try {
-            await unlink(output);
-        } catch (ex) {}
 
         // 获取clip基础信息
         const clip = await ZimuApi.findClipById(clipId);
         console.log(clip);
+
+        // 如果存在相同的切片，则直接返回
+        try {
+            await stat(output);
+            await PushApi.push('片段制作完成', `${clip.id},${clip.title},${filename}`);
+            return { filename };
+        } catch (ex) {}
 
         // 获取视频源地址并生成ffmpeg参数，B站视频需要先查缓存，如果缓存没有，需要请求B站获取
         // 非B站视频直接使用playUrl
