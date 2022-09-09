@@ -46,7 +46,6 @@ export default class BiliApi {
             });
         });
         try {
-            console.log(res.data.durl[0]);
             return res.data.durl[0].url;
         } catch (ex) {
             console.log(ex);

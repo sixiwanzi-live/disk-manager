@@ -123,6 +123,7 @@ export default class SegmentService {
                     // 重新获取视频流
                     const qn = 120;
                     src = await BiliApi.fetchStreamUrl(bv, cid, qn);
+                    console.log(src);
                     // 将获取到的新src保存起来
                     this.srcMap.set(clipId, src);
                 } catch (ex) {
