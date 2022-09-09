@@ -20,8 +20,8 @@ import SegmentService from './segment/SegmentService.js';
      * hello
      */
     router.get('/hello', ctx => {
-        ctx.log.info("[log]hello");
         ctx.body = 'hello';
+        ctx.log.info("[log]hello");
     });
 
     /**
