@@ -1,6 +1,5 @@
 import { stat, unlink } from 'fs/promises';
 import {spawn} from 'child_process';
-import { EventEmitter } from 'events';
 import error from "../error.js";
 import config from '../config.js';
 import {toTime} from '../util.js';
