@@ -3,18 +3,12 @@ import config from "./config.js"
 export default {
     server: {
         code: 500101000,
-        message: 'internal server error'
+        message: '服务器未知错误'
     },
     auth: {
         Unauthorized: {
             code: 401101000,
             message: '您没有权限使用该功能'
-        }
-    },
-    push: {
-        Failed: {
-            code: 500101001,
-            message: ''
         }
     },
     disk: {

@@ -105,7 +105,7 @@ export default class DiskService {
         // 下载视频
         const cid = await BiliApi.fetchCid(bv);
         const src = await BiliApi.fetchStreamUrl(bv, cid, 120);
-        console.log(`源视频地址:${src}`);
+        ctx.logger.info(`源视频地址:${src}`);
         try {
             await new Promise((res, rej) => {
                 let cmd = [
@@ -118,34 +118,34 @@ export default class DiskService {
                 ];
                 let p = spawn('ffmpeg', cmd);
                 p.stdout.on('data', (data) => {
-                    console.log('stdout: ' + data.toString());
+                    ctx.logger.info('stdout: ' + data.toString());
                 });
                 p.stderr.on('data', (data) => {
-                    console.log('stderr: ' + data.toString());
+                    ctx.logger.info('stderr: ' + data.toString());
                 });
                 p.on('close', (code) => {
-                    console.log(`下载程序退出:${bv}, code:${code}`);
+                    ctx.logger.info(`下载程序退出:${bv}, code:${code}`);
                     res();
                 });
                 p.on('error', (error) => {
-                    console.log(error);
+                    ctx.logger.error(error);
                     rej(error);
                 });
             });
-            try {
-                await stat(filepath);
-                await PushApi.push('视频下载完成', bv);
-            } catch (ex2) {
-                console.log(ex2);
-                await PushApi.push('找不到下载视频', bv);
-                throw ex2;
-            }
         } catch (ex) {
-            console.log(ex);
+            ctx.logger.error(ex);
             throw {
                 code: error.disk.DownloadFailed.code,
                 message: ex
             }
+        }
+        try {
+            await stat(filepath);
+            await PushApi.push('视频下载完成', bv);
+        } catch (ex2) {
+            ctx.logger.error(ex2);
+            await PushApi.push('找不到下载视频', bv);
+            throw ex2;
         }
         return {};
     };
@@ -161,7 +161,7 @@ export default class DiskService {
 
         // 下载视频
         const src = url;
-        console.log(`源视频地址:${src}`);
+        ctx.logger.info(`源视频地址:${src}`);
         try {
             await new Promise((res, rej) => {
                 let cmd = [
@@ -172,34 +172,34 @@ export default class DiskService {
                 ];
                 let p = spawn('ffmpeg', cmd);
                 p.stdout.on('data', (data) => {
-                    console.log('stdout: ' + data.toString());
+                    ctx.logger.info('stdout: ' + data.toString());
                 });
                 p.stderr.on('data', (data) => {
-                    console.log('stderr: ' + data.toString());
+                    ctx.logger.info('stderr: ' + data.toString());
                 });
                 p.on('close', (code) => {
-                    console.log(`下载程序退出:${filename}, code:${code}`);
+                    ctx.logger.info(`下载程序退出:${filename}, code:${code}`);
                     res();
                 });
                 p.on('error', (error) => {
-                    console.log(error);
+                    ctx.logger.error(error);
                     rej(error);
                 });
             });
-            try {
-                await stat(filepath);
-                await PushApi.push('视频下载完成', filename);
-            } catch (ex2) {
-                console.log(ex2);
-                await PushApi.push('找不到下载视频', filename);
-                throw ex2;
-            }
         } catch (ex) {
             console.log(ex);
             throw {
                 code: error.disk.DownloadFailed.code,
                 message: ex
             }
+        }
+        try {
+            await stat(filepath);
+            await PushApi.push('视频下载完成', filename);
+        } catch (ex2) {
+            ctx.logger.error(ex2);
+            await PushApi.push('找不到下载视频', filename);
+            throw ex2;
         }
         return {};
     };

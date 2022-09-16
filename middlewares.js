@@ -5,7 +5,7 @@ export async function errorHandler(ctx, next) {
     try {
         await next();
     } catch (e) {
-        console.log(e);
+        ctx.logger.error(e);
         if (!(e instanceof Error) && e.hasOwnProperty('code') && e.hasOwnProperty('message')) {
             ctx.body = e;
         } else {
