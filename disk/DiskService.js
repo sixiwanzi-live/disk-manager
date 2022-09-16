@@ -118,10 +118,10 @@ export default class DiskService {
                 ];
                 let p = spawn('ffmpeg', cmd);
                 p.stdout.on('data', (data) => {
-                    ctx.logger.info('stdout: ' + data.toString());
+                    console.log('stdout: ' + data.toString());
                 });
                 p.stderr.on('data', (data) => {
-                    ctx.logger.info('stderr: ' + data.toString());
+                    console.log('stderr: ' + data.toString());
                 });
                 p.on('close', (code) => {
                     ctx.logger.info(`下载程序退出:${bv}, code:${code}`);
@@ -172,10 +172,10 @@ export default class DiskService {
                 ];
                 let p = spawn('ffmpeg', cmd);
                 p.stdout.on('data', (data) => {
-                    ctx.logger.info('stdout: ' + data.toString());
+                    console.log('stdout: ' + data.toString());
                 });
                 p.stderr.on('data', (data) => {
-                    ctx.logger.info('stderr: ' + data.toString());
+                    console.log('stderr: ' + data.toString());
                 });
                 p.on('close', (code) => {
                     ctx.logger.info(`下载程序退出:${filename}, code:${code}`);

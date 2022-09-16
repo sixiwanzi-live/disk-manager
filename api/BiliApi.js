@@ -30,7 +30,8 @@ export default class BiliApi {
                 -H 'referer: https://player.bilibili.com/' \
                 -H 'sec-ch-ua: "Microsoft Edge";v="105", " Not;A Brand";v="99", "Chromium";v="105"' \
                 -H 'sec-ch-ua-mobile: ?0' \
-                -H 'sec-ch-ua-platform: "Windows"' \
+                -H 'sec-ch-ua-platform: "Windows"' \en 
+                
                 -H 'sec-fetch-dest: empty' \
                 -H 'sec-fetch-mode: cors' \
                 -H 'sec-fetch-site: same-site' \

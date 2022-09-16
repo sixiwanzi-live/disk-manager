@@ -1,4 +1,4 @@
-import { stat, unlink } from 'fs/promises';
+import { stat } from 'fs/promises';
 import {spawn} from 'child_process';
 import error from "../error.js";
 import config from '../config.js';
@@ -36,7 +36,7 @@ export default class SegmentService {
 
         // 获取clip基础信息
         const clip = await ZimuApi.findClipById(clipId);
-        console.log(clip);
+        ctx.logger.info(clip);
 
         // 如果存在相同的切片，则直接返回
         try {
@@ -52,9 +52,9 @@ export default class SegmentService {
         if (clip.type === 1) {
             if (this.srcMap.has(clipId)) {
                 src = this.srcMap.get(clipId);
-                console.log(`clip(${clipId})命中缓存`);
+                ctx.logger.info(`clip(${clipId})命中缓存`);
             } else {
-                console.log(`clip(${clipId})未命中缓存`);
+                ctx.logger.info(`clip(${clipId})未命中缓存`);
             }
             cmd = [
                 '-ss', toTime(startTime), 
@@ -100,19 +100,19 @@ export default class SegmentService {
                     console.log('stderr: ' + data.toString());
                 });
                 p.on('close', (code) => {
-                    console.log(`ffmpeg退出:${clip.id}-${clip.title}, code:${code}`);
+                    ctx.logger.info(`ffmpeg退出:${clip.id}-${clip.title}, code:${code}`);
                     res();
                 });
                 p.on('error', (error) => {
-                    console.log(error);
+                    ctx.logger.error(error);
                     rej(error);
                 });
             });
             await stat(output);
         } catch (ex) {
-            console.log(ex);
+            ctx.logger.error(ex);
             if (clip.type === 1) {
-                console.log(`clip(${clipId})缓存可能失效，需重新获取`);
+                ctx.logger.info(`clip(${clipId})缓存可能失效，需重新获取`);
                 // 在下载切片失败的情况下，如果是从B站下载失败的，说明视频源有问题，需要重新申请视频源
                 if (this.srcMap.has(clipId)) {
                     this.srcMap.delete(clipId);
@@ -124,11 +124,11 @@ export default class SegmentService {
                     // 重新获取视频流
                     const qn = 112;
                     src = await BiliApi.fetchStreamUrl(bv, cid, qn);
-                    console.log(src);
+                    ctx.logger.info(src);
                     // 将获取到的新src保存起来
                     this.srcMap.set(clipId, src);
                 } catch (ex) {
-                    console.log(ex.response.data);
+                    ctx.logger.info(ex.response.data);
                     throw error.segment.StreamNotFound;
                 }
                 // 重新生成ffmepg命令行参数
@@ -158,16 +158,16 @@ export default class SegmentService {
                             console.log('stderr: ' + data.toString());
                         });
                         p.on('close', (code) => {
-                            console.log(`ffmpeg退出:${clip.id}-${clip.title}, code:${code}`);
+                            ctx.logger.info(`ffmpeg退出:${clip.id}-${clip.title}, code:${code}`);
                             res();
                         });
                         p.on('error', (error) => {
-                            console.log(error);
+                            ctx.logger.error(error);
                             rej(error);
                         });
                     });
                 } catch (ex) {
-                    console.log(ex);
+                    ctx.logger.error(ex);
                     throw error.segment.Failed;
                 }
             } else {
@@ -179,7 +179,7 @@ export default class SegmentService {
         try {
             await stat(output);
         } catch (ex) {
-            console.log(ex);
+            ctx.logger.error(ex);
             throw error.segment.Failed;
         }
 
