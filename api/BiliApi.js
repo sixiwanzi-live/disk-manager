@@ -1,4 +1,5 @@
 import axios from 'axios';
+import fetch from 'node-fetch';
 import { exec } from 'child_process';
 import error from '../error.js';
 import config from '../config.js';
@@ -7,8 +8,10 @@ export default class BiliApi {
 
     static async fetchCid(bv) {
         try {
-            const res = await axios.get(`http://api.bilibili.com/x/web-interface/view?bvid=${bv}`);
-            return res.data.data.cid;
+            const res = await fetch(`http://api.bilibili.com/x/web-interface/view?bvid=${bv}`);
+            const data = await res.json();
+            console.log(data);
+            return await data.cid;
         } catch (ex) {
             console.log(ex.response.data);
             throw error.segment.CidNotFound;
