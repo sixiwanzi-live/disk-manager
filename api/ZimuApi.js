@@ -5,9 +5,10 @@ import config from '../config.js';
 export default class ZimuApi {
     static async findClipById(clipId) {
         try {
-            const res = await (await fetch(`${config.zimu.url}/clips/${clipId}`)).json();
-            console.log(res);
-            return res.data;
+            const res = await fetch(`${config.zimu.url}/clips/${clipId}`);
+            const data = await res.json();
+            console.log(data);
+            return data;
         } catch (ex) {
             console.log(ex);
             throw error.zimu.ClipNotFound;
