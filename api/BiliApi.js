@@ -1,4 +1,3 @@
-import axios from 'axios';
 import fetch from 'node-fetch';
 import { exec } from 'child_process';
 import error from '../error.js';
@@ -10,15 +9,14 @@ export default class BiliApi {
         try {
             const res = await fetch(`http://api.bilibili.com/x/web-interface/view?bvid=${bv}`);
             const data = await res.json();
-            console.log(data);
-            return await data.cid;
+            return data.data.cid;
         } catch (ex) {
             console.log(ex.response.data);
             throw error.segment.CidNotFound;
         }
     }
 
-    static async fetchStreamUrl(bv, cid, qn) {
+    static async fetchStreamUrl(bv, cid) {
         const res = await new Promise((res, rej) => {
             const playurl = `https://api.bilibili.com/x/player/playurl?bvid=${bv}&cid=${cid}&qn=120&fnval=128&fourk=1`;
             console.log(playurl);
