@@ -6,6 +6,7 @@ export default class ZimuApi {
     static async findClipById(clipId) {
         try {
             const res = await (await fetch(`${config.zimu.url}/clips/${clipId}`)).json();
+            console.log(res);
             return res.data;
         } catch (ex) {
             console.log(ex);
