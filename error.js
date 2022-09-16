@@ -42,6 +42,10 @@ export default {
             code: 500101133,
             message: 'FFMPEG提取音频失败'
         },
+        SlowStream: {
+            code: 500101134,
+            message: '获取到B站异常源，请重试'
+        },
         IntervalTooLong: {
             code: 400101130,
             message: `切片时长不应超过${config.segment.maxInterval}分钟`

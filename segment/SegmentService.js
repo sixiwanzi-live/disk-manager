@@ -125,12 +125,16 @@ export default class SegmentService {
                     const qn = 112;
                     src = await BiliApi.fetchStreamUrl(bv, cid, qn);
                     ctx.logger.info(src);
-                    // 将获取到的新src保存起来
-                    this.srcMap.set(clipId, src);
                 } catch (ex) {
                     ctx.logger.info(ex.response.data);
                     throw error.segment.StreamNotFound;
                 }
+                // 包含mcdn的源是有问题的，无法获取到切片
+                if (src.indexOf("mcdn") !== -1) {
+                    throw error.segment.SlowStream;
+                }
+                // 将获取到的新src保存起来
+                this.srcMap.set(clipId, src);
                 // 重新生成ffmepg命令行参数
                 cmd = [
                     '-ss', toTime(startTime), 
