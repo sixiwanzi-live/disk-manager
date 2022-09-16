@@ -19,21 +19,21 @@ export default class DiskService {
     save = async (ctx) => {
         const bv = ctx.request.body.bv;
         if (bv) {
-            return this.downloadByBv(bv);
+            return this.downloadByBv(ctx, bv);
         }
 
         const url = ctx.request.body.url;
         if (url) {
-            return this.downloadByUrl(url);
+            return this.downloadByUrl(ctx, url);
         }
 
         const clipId = ctx.request.body.clipId;
         if (clipId) {
-            return this.downloadByClipId(clipId);
+            return this.downloadByClipId(ctx, clipId);
         }
     };
 
-    downloadByClipId = async (clipId) => {
+    downloadByClipId = async (ctx, clipId) => {
         // 获取clip基础信息
         const filepath = `${config.disk.path}/video/${clipId}.mp4`;
         try {
@@ -90,7 +90,7 @@ export default class DiskService {
         }
     }
 
-    downloadByBv = async (bv) => {
+    downloadByBv = async (ctx, bv) => {
         // 检查bv是否合法
         if (!bv || bv.length !== 12) {
             throw error.disk.BvIllegal;
@@ -150,7 +150,7 @@ export default class DiskService {
         return {};
     };
 
-    downloadByUrl = async (url) => {
+    downloadByUrl = async (ctx, url) => {
         const fields = url.split('/');
         const filename = fields[fields.length - 1].split('.')[0];
         const filepath = `${config.disk.path}/tmp/${filename}.mp4`;
