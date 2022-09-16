@@ -2,7 +2,8 @@ import Koa from 'koa';
 import Router from '@koa/router';
 import cors from '@koa/cors';
 import koaBody from 'koa-body';
-import pino from 'koa-pino-logger';
+import logger from 'koa-logger';
+import pino from 'pino';
 import config from './config.js';
 import { errorHandler } from './middlewares.js';
 import DiskService from './disk/DiskService.js';
@@ -10,8 +11,9 @@ import SegmentService from './segment/SegmentService.js';
 
 (async () => {
     const app = new Koa({ proxy: true });
-    app.use(pino());
     const router = new Router();
+
+    app.context.logger = pino();
 
     app.context.diskService = new DiskService();
     app.context.segmentService = new SegmentService();
@@ -21,7 +23,6 @@ import SegmentService from './segment/SegmentService.js';
      */
     router.get('/hello', ctx => {
         ctx.body = 'hello';
-        ctx.log.info("[log]hello");
     });
 
     /**
@@ -42,6 +43,11 @@ import SegmentService from './segment/SegmentService.js';
         jsonLimit: config.web.bodyLimit
     }));
     
+    app.use(logger((str, args) => {
+        let line = `${args[1]} ${args[2] || ''} ${args[3] || ''} ${args[4] || ''} ${args[5] || ''}`;
+        line = line.trim();
+        app.context.logger.info(line);
+    }));
     app.use(cors());
     app.use(errorHandler);
     app.use(router.routes());
