@@ -1,5 +1,6 @@
 import { stat } from 'fs/promises';
 import {spawn} from 'child_process';
+import md5 from 'md5';
 import error from "../error.js";
 import config from '../config.js';
 import {toTime} from '../util.js';
@@ -36,6 +37,7 @@ export default class SegmentService {
 
         // 获取clip基础信息
         const clip = await ZimuApi.findClipById(clipId);
+        clip.sign = md5(md5(clip.playUrl)).substring(10, 16);
         ctx.logger.info(clip);
 
         // 如果存在相同的切片，则直接返回
@@ -73,7 +75,7 @@ export default class SegmentService {
                 cmd = ['-vn', ...cmd];
             }
         } else {
-            src = `https://${clip.playUrl}`;
+            src = `https://${clip.playUrl}?sign=${clip.sign}`;
             cmd = [
                 '-ss', toTime(startTime), 
                 '-to', toTime(endTime), 

@@ -1,6 +1,6 @@
 {
   "name": "disk-manager",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "视频存储管理",
   "main": "index.js",
   "type": "module",
@@ -23,6 +23,7 @@
     "koa": "^2.13.4",
     "koa-body": "^5.0.0",
     "koa-logger": "^3.2.1",
+    "md5": "^2.3.0",
     "moment": "^2.29.3",
     "node-fetch": "^3.2.10",
     "pino": "^8.5.0"
