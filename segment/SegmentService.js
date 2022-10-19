@@ -131,12 +131,11 @@ export default class SegmentService {
                     ctx.logger.info(ex.response.data);
                     throw error.segment.StreamNotFound;
                 }
-                // 包含mcdn的源是有问题的，无法获取到切片
-                if (src.indexOf("mcdn") !== -1) {
-                    throw error.segment.SlowStream;
-                }
+                // 包含mcdn的源有问题，不应该被保存。
                 // 将获取到的新src保存起来
-                this.srcMap.set(clipId, src);
+                if (src.indexOf("mcdn") === -1) {
+                    this.srcMap.set(clipId, src);
+                }
                 // 重新生成ffmepg命令行参数
                 cmd = [
                     '-ss', toTime(startTime), 
