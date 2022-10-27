@@ -85,6 +85,7 @@ export default class SegmentService {
             cmd = [
                 '-ss', toTime(startTime), 
                 '-to', toTime(endTime), 
+                '-accurate_seek', 
                 '-i', src,
                 '-c', 'copy',
                 '-avoid_negative_ts', 1,
