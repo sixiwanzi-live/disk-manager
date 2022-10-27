@@ -1,6 +1,5 @@
 import { stat } from 'fs/promises';
 import {spawn} from 'child_process';
-import md5 from 'md5';
 import error from "../error.js";
 import config from '../config.js';
 import {toTime} from '../util.js';
@@ -37,7 +36,6 @@ export default class SegmentService {
 
         // 获取clip基础信息
         const clip = await ZimuApi.findClipById(clipId);
-        clip.sign = md5(md5(clip.playUrl)).substring(10, 16);
         ctx.logger.info(clip);
 
         // 如果存在相同的切片，则直接返回
@@ -74,13 +72,16 @@ export default class SegmentService {
             if (audio === 'true') {
                 cmd = ['-vn', ...cmd];
             }
-        } else {
-            src = `https://${clip.playUrl}?sign=${clip.sign}`;
+        } else if (clip.type === 2) {
+            const organizationId = clip.author.organizationId;
+            const authorName = clip.author.name;
+            const yyyymm = clip.datetime.substring(0, 7);
+            const datetime = clip.datetime.replaceAll('-', '').replaceAll(':', '').replaceAll(' ', '-');
+            src = `${config.segment.path}/${organizationId}/${authorName}/${yyyymm}/${datetime}-${authorName}-${clip.title}/index.m3u8`;
             cmd = [
                 '-ss', toTime(startTime), 
                 '-to', toTime(endTime), 
                 '-accurate_seek', 
-                '-seekable', 1, 
                 '-i', src,
                 '-c', 'copy',
                 '-avoid_negative_ts', 1,
@@ -176,7 +177,7 @@ export default class SegmentService {
                     throw error.segment.Failed;
                 }
             } else {
-                // 在下载切片失败的情况下，如果是从录播站下载失败的，则直接报错。
+                // 在下载切片失败的情况下，如果是从本地源下载失败的，则直接报错。
                 throw error.segment.Failed;
             }
         }
