@@ -73,8 +73,12 @@ export default class SegmentService {
                 cmd = ['-vn', ...cmd];
             }
         } else if (clip.type === 2) {
-            const organizationId = clip.author.organizationId;
-            const authorName = clip.author.name;
+            const author = await ZimuApi.findAuthorById(clip.authorId);
+            if (!author) {
+                throw error.zimu.AuthorNotFound;
+            }
+            const organizationId = author.organizationId;
+            const authorName = author.name;
             const yyyymm = clip.datetime.substring(0, 7);
             const datetime = clip.datetime.replaceAll('-', '').replaceAll(':', '').replaceAll(' ', '-');
             src = `${config.segment.path}/${organizationId}/${authorName}/${yyyymm}/${datetime}-${authorName}-${clip.title}/index.m3u8`;

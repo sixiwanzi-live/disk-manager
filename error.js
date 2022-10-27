@@ -59,6 +59,10 @@ export default {
         ClipNotFound: {
             code: 400101140,
             message: '视频不存在'
+        },
+        AuthorNotFound: {
+            code: 400101141,
+            message: '主播不存在'
         }
     }
 }

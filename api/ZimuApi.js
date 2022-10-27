@@ -14,4 +14,15 @@ export default class ZimuApi {
             throw error.zimu.ClipNotFound;
         }
     }
+
+    static async findAuthorById(authorId) {
+        const url = `${config.zimu.url}/authors/${authorId}`;
+        const res = await fetch(url);
+        if (!res.ok) {
+            console.error(await res.text());
+            return null;
+        } else {
+            return await res.json();
+        }
+    }
 }
