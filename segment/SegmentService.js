@@ -82,11 +82,20 @@ export default class SegmentService {
             const yyyymm = clip.datetime.substring(0, 7);
             const datetime = clip.datetime.replaceAll('-', '').replaceAll(':', '').replaceAll(' ', '-');
             src = `${config.segment.path}/${organizationId}/${authorName}/${yyyymm}/${datetime}-${authorName}-${clip.title}/index.m3u8`;
+            // cmd = [
+            //     '-ss', toTime(startTime), 
+            //     '-to', toTime(endTime), 
+            //     '-accurate_seek', 
+            //     '-i', src,
+            //     '-c', 'copy',
+            //     '-avoid_negative_ts', 1,
+            //     output
+            // ];
+
             cmd = [
+                '-i', src,
                 '-ss', toTime(startTime), 
                 '-to', toTime(endTime), 
-                '-accurate_seek', 
-                '-i', src,
                 '-c', 'copy',
                 '-avoid_negative_ts', 1,
                 output
