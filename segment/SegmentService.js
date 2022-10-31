@@ -68,11 +68,19 @@ export default class SegmentService {
                 '-avoid_negative_ts', 1,
                 output
             ];
-            // 仅下载音频需要添加额外的命令行参数
-            if (audio === 'true') {
-                cmd = ['-vn', ...cmd];
-            }
         } else if (clip.type === 2) {
+            src = `https://${clip.playUrl}`;
+            cmd = [
+                '-ss', toTime(startTime), 
+                '-to', toTime(endTime), 
+                '-accurate_seek', 
+                '-seekable', 1, 
+                '-i', src,
+                '-c', 'copy',
+                '-avoid_negative_ts', 1,
+                output
+            ];
+        } else if (clip.type === 3) {
             const author = await ZimuApi.findAuthorById(clip.authorId);
             if (!author) {
                 throw error.zimu.AuthorNotFound;
