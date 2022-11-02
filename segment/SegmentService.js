@@ -68,7 +68,7 @@ export default class SegmentService {
                 '-avoid_negative_ts', 1,
                 output
             ];
-        } else if (clip.type === 2) {
+        } else if (clip.type === 2 || clip.type === 4) {
             src = `https://${clip.playUrl}`;
             cmd = [
                 '-ss', toTime(startTime), 
