@@ -13,7 +13,7 @@ import SegmentService from './segment/SegmentService.js';
     const app = new Koa({ proxy: true });
     const router = new Router();
 
-    app.context.logger = pino();
+    app.context.logger = pino({ transport: { target: 'pino-pretty' } });
 
     app.context.diskService = new DiskService();
     app.context.segmentService = new SegmentService();
@@ -37,6 +37,13 @@ import SegmentService from './segment/SegmentService.js';
      */
     router.get('/clips/:clipId/segments', async ctx => {
         ctx.body = await ctx.segmentService.make(ctx);
+    });
+
+    /**
+     * segment
+     */
+    router.get('/clips/:clipId/segments1', async ctx => {
+        ctx.body = await ctx.segmentService.make1(ctx);
     });
 
     app.use(koaBody({ 
