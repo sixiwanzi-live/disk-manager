@@ -43,7 +43,7 @@ import SegmentService from './segment/SegmentService.js';
      * segment
      */
     router.get('/clips/:clipId/segments1', async ctx => {
-        ctx.body = await ctx.segmentService.make1(ctx);
+        ctx.body = await ctx.segmentService.make(ctx);
     });
 
     app.use(koaBody({ 
