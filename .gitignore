@@ -106,3 +106,4 @@ dist
 # Projects
 config.js
 cache/
+package-lock.json
