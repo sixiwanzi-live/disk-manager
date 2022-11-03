@@ -211,10 +211,9 @@ export default class SegmentService {
         const endTime   = ctx.request.query.endTime;
         const audio     = ctx.request.query.audio || 'false';
 
-        // 去掉毫秒
-        const st = startTime.substring(0, startTime.length - 4);
-        const et = endTime.substring(0, endTime.length - 4);
-        let filename = `clip-${clipId}-${st.replaceAll(':', '-')}--${et.replaceAll(':', '-')}`;
+        const st = startTime.replace(',', '.');
+        const et = endTime.replace(',', '.');
+        let filename = `clip-${clipId}-${st.replaceAll(':', '-').replace('.', '-')}--${et.replaceAll(':', '-').replace('.', '-')}`;
         if (audio === 'true') {
             filename = `${filename}.aac`;
         } else {
