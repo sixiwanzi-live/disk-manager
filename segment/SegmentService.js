@@ -62,7 +62,7 @@ export default class SegmentService {
                 '-avoid_negative_ts', 1,
                 output
             ];
-        } else if (clip.type === 2 || clip.type === 4) {
+        } else if (clip.type === 2 || clip.type === 3 || clip.type === 4) {
             src = `https://${clip.playUrl}`;
             cmd = [
                 '-ss', st, 
@@ -74,25 +74,7 @@ export default class SegmentService {
                 '-avoid_negative_ts', 1,
                 output
             ];
-        } else if (clip.type === 3) {
-            const author = await ZimuApi.findAuthorById(clip.authorId);
-            if (!author) {
-                throw error.zimu.AuthorNotFound;
-            }
-            const organizationId = author.organizationId;
-            const authorName = author.name;
-            const yyyymm = clip.datetime.substring(0, 7);
-            const datetime = clip.datetime.replaceAll('-', '').replaceAll(':', '').replaceAll(' ', '-');
-            src = `${config.segment.path}/${organizationId}/${authorName}/${yyyymm}/${datetime}-${authorName}-${clip.title}/index.m3u8`;
-            cmd = [
-                '-ss', st, 
-                '-to', et, 
-                '-i', src,
-                '-c', 'copy',
-                '-avoid_negative_ts', 1,
-                output
-            ];
-        }
+        } 
         // 仅下载音频需要添加额外的命令行参数
         if (audio === 'true') {
             cmd = ['-vn', ...cmd];
