@@ -25,7 +25,7 @@ export default class BiliApi {
                 -H 'accept: application/json, text/javascript, */*; q=0.01' \
                 -H 'accept-language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6' \
                 -H 'cache-control: no-cache' \
-                -H 'cookie: ${config.segment.cookie}' \
+                -H "cookie: ${config.segment.cookie}" \
                 -H 'origin: https://player.bilibili.com' \
                 -H 'pragma: no-cache' \
                 -H 'referer: https://player.bilibili.com/' \
